@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 import Card from "./components/Card";
-import Button from "./components/Button";
+import Button from "./components/StartButton";
 const App = () => {
     const [open, setOpen] = useState(false);
     return (
@@ -26,12 +26,55 @@ const App = () => {
 export default App;
 
 const CardContainer = () => {
+    const [cardList, setCardList] = useState([
+        {
+            initX: -100,
+            initY: -100,
+            buttonText: "毅力",
+            checked: false,
+        },
+        {
+            initX: 100,
+            initY: -100,
+            buttonText: "樂觀",
+            checked: false,
+        },
+        {
+            initX: -100,
+            initY: 100,
+            buttonText: "積極",
+            checked: false,
+        },
+        {
+            initX: 100,
+            initY: 100,
+            buttonText: "執著",
+            checked: false,
+        },
+    ]);
+
+    const handleClickCard = (text) => {
+        setCardList((cards) => {
+            return cards.map((card) => {
+                if (card.buttonText === text) {
+                    return { ...card, checked: true };
+                }
+                return card;
+            });
+        });
+    };
     return (
         <div className="card-container">
-            <Card initX={-100} initY={-100} />
-            <Card initX={100} initY={-100} />
-            <Card initX={-100} initY={100} />
-            <Card initX={100} initY={100} />
+            {cardList.map(({ initX, initY, buttonText, checked }) => (
+                <Card
+                    key={buttonText}
+                    initX={initX}
+                    initY={initY}
+                    buttonText={buttonText}
+                    checked={checked}
+                    onClick={handleClickCard}
+                />
+            ))}
         </div>
     );
 };

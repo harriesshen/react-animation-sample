@@ -23,6 +23,6 @@
 .card-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    row-gap: 20px;
+    row-gap: 40px;
     column-gap: 60px;
 }

@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import "./index.css";
-export default function Button(props) {
+export default function StartButton(props) {
     const { onClick, children } = props;
     const [clicked, setClicked] = useState(false);
     const duration = 1;
-    const delay = 0.3;
     const handleClick = () => {
         setClicked(true);
     };
@@ -14,7 +13,7 @@ export default function Button(props) {
     };
     return (
         <motion.button
-            className="arc-button"
+            className="start-button"
             onClick={handleClick}
             initial={{ opacity: 1 }}
             animate={{
@@ -28,10 +27,10 @@ export default function Button(props) {
             }}
         >
             <motion.div
-                className="button-text"
+                className="inner-border"
                 initial={{ scale: 1 }}
                 animate={{
-                    scale: clicked ? [1, 0.5, 0] : 1, // 外圓框縮小
+                    scale: clicked ? [1, 0.5, 0] : 1,
                 }}
                 transition={{
                     duration,
@@ -42,7 +41,7 @@ export default function Button(props) {
                 <motion.div
                     initial={{ scale: 1 }}
                     animate={{
-                        scaleY: clicked ? 0 : 1, // 外圓框縮小
+                        scaleY: clicked ? 0 : 1,
                     }}
                     transition={{ duration: 0.1 }}
                 >
@@ -50,7 +49,7 @@ export default function Button(props) {
                 </motion.div>
             </motion.div>
             <motion.div
-                className="button-border"
+                className="outer-border"
                 initial={{ scale: 1 }}
                 animate={{
                     scale: clicked ? [1, 0.6, 0] : 1,
