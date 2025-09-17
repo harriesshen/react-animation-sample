@@ -3,13 +3,27 @@ import { motion } from "framer-motion";
 import "./index.css";
 
 export default function Card(props) {
-    const { initX = 100, initY = 100, buttonText, checked, onClick } = props;
+    const {
+        initX = 100,
+        initY = 100,
+        buttonText,
+        checked,
+        display,
+        onClick,
+    } = props;
     const [startBorderAnimation, setStartBorderAnimation] = useState(false);
     const [enableButton, setEnableButton] = useState(false);
+    const [pickOut, setPickOut] = useState(false);
+    const [loading, setLoading] = useState(false);
     const cardRef = useRef(null);
+    const borderColor = checked ? "#1885ebff" : "#FFFFFF";
+
     const handleCardAnimation = () => {
-        setStartBorderAnimation(true);
+        setLoading(false);
+        if (!startBorderAnimation) setStartBorderAnimation(true);
         if (cardRef) cardRef.current.style.pointerEvents = "auto";
+        if (cardRef && !display) cardRef.current.style.pointerEvents = "none";
+        if (display && checked) setPickOut(true);
     };
 
     useEffect(() => {
@@ -17,17 +31,28 @@ export default function Card(props) {
             setEnableButton(true);
         }, 4000);
     }, []);
-    const borderColor = checked ? "#1885ebff" : "#FFFFFF";
+
+    useEffect(() => {
+        if (!loading && display && checked) setPickOut(true);
+    }, [loading, display, checked]);
     return (
         <motion.div
-            initial={{ opacity: 0, x: initX, y: initY }} // 初始位置為左上
-            animate={{ opacity: 1, x: 0, y: 0 }} // 目標位置為中心
+            initial={{ opacity: 0, x: initX, y: initY }}
+            animate={{
+                opacity: !display ? 0 : 1,
+                x: !pickOut ? 0 : 300,
+                y: !pickOut ? 0 : 100,
+            }}
             transition={{ duration: 5 }}
             className="card"
             onAnimationComplete={handleCardAnimation}
             style={{ borderColor }}
             onClick={() => onClick(buttonText)}
             ref={cardRef}
+            onAnimationStart={() => {
+                setLoading(true);
+                console.log("start animation");
+            }}
         >
             Card
             <CardButton

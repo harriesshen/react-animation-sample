@@ -32,24 +32,28 @@ const CardContainer = () => {
             initY: -100,
             buttonText: "毅力",
             checked: false,
+            display: true,
         },
         {
             initX: 100,
             initY: -100,
             buttonText: "樂觀",
             checked: false,
+            display: true,
         },
         {
             initX: -100,
             initY: 100,
             buttonText: "積極",
             checked: false,
+            display: true,
         },
         {
             initX: 100,
             initY: 100,
             buttonText: "執著",
             checked: false,
+            display: true,
         },
     ]);
 
@@ -59,19 +63,20 @@ const CardContainer = () => {
                 if (card.buttonText === text) {
                     return { ...card, checked: true };
                 }
-                return card;
+                return { ...card, display: false };
             });
         });
     };
     return (
         <div className="card-container">
-            {cardList.map(({ initX, initY, buttonText, checked }) => (
+            {cardList.map(({ initX, initY, buttonText, checked, display }) => (
                 <Card
                     key={buttonText}
                     initX={initX}
                     initY={initY}
                     buttonText={buttonText}
                     checked={checked}
+                    display={display}
                     onClick={handleClickCard}
                 />
             ))}
