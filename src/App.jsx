@@ -2,6 +2,8 @@ import { useState } from "react";
 import "./App.css";
 import Card from "./components/Card";
 import Button from "./components/StartButton";
+import demo1 from "./assets/demo1.svg";
+import CardImage from "./components/CardImage";
 const App = () => {
     const [open, setOpen] = useState(false);
     return (
@@ -21,6 +23,7 @@ const App = () => {
             )}
         </div>
     );
+    // return <CardImage />;
 };
 
 export default App;
@@ -33,6 +36,7 @@ const CardContainer = () => {
             buttonText: "毅力",
             checked: false,
             display: true,
+            svgImage: demo1,
         },
         {
             initX: 100,
@@ -40,6 +44,7 @@ const CardContainer = () => {
             buttonText: "樂觀",
             checked: false,
             display: true,
+            svgImage: null,
         },
         {
             initX: -100,
@@ -47,6 +52,7 @@ const CardContainer = () => {
             buttonText: "積極",
             checked: false,
             display: true,
+            svgImage: null,
         },
         {
             initX: 100,
@@ -54,6 +60,7 @@ const CardContainer = () => {
             buttonText: "執著",
             checked: false,
             display: true,
+            svgImage: null,
         },
     ]);
 
@@ -69,17 +76,20 @@ const CardContainer = () => {
     };
     return (
         <div className="card-container">
-            {cardList.map(({ initX, initY, buttonText, checked, display }) => (
-                <Card
-                    key={buttonText}
-                    initX={initX}
-                    initY={initY}
-                    buttonText={buttonText}
-                    checked={checked}
-                    display={display}
-                    onClick={handleClickCard}
-                />
-            ))}
+            {cardList.map(
+                ({ initX, initY, buttonText, checked, display, svgImage }) => (
+                    <Card
+                        key={buttonText}
+                        initX={initX}
+                        initY={initY}
+                        buttonText={buttonText}
+                        checked={checked}
+                        display={display}
+                        svgImage={svgImage}
+                        onClick={handleClickCard}
+                    />
+                )
+            )}
         </div>
     );
 };
