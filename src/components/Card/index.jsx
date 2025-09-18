@@ -12,6 +12,7 @@ export default function Card(props) {
         display,
         onClick,
         svgImage,
+        setStep,
     } = props;
     const [startBorderAnimation, setStartBorderAnimation] = useState(false);
     const [enableButton, setEnableButton] = useState(false);
@@ -22,6 +23,7 @@ export default function Card(props) {
         if (!startBorderAnimation) setStartBorderAnimation(true);
         if (cardRef) cardRef.current.style.pointerEvents = "auto";
         if (cardRef && !display) cardRef.current.style.pointerEvents = "none";
+        if (pickOut) setStep();
     };
 
     const moveToCenter = () => {
@@ -35,7 +37,6 @@ export default function Card(props) {
         const targetX = screenCenterX - cardCenterX;
         const targetY = screenCenterY - cardCenterY;
 
-        // 更新目標位置
         return { x: targetX, y: targetY };
     };
 
@@ -49,33 +50,32 @@ export default function Card(props) {
         if (display && checked) {
             setTimeout(() => {
                 setPickOut(true);
-            }, 5000);
+            }, 1000);
         }
     }, [display, checked]);
-
     return (
         <motion.div
-            initial={{ opacity: 0, x: initX, y: initY }}
+            // 改變定點位置從InitX,InitY帶值
+            initial={{ opacity: 1, x: 0, y: 0 }}
             animate={{
                 opacity: !display ? 0 : 1,
-                x: !pickOut ? 0 : moveToCenter().x,
-                y: !pickOut ? 0 : moveToCenter().y,
+                x: !pickOut ? initX : moveToCenter().x,
+                y: !pickOut ? initY : moveToCenter().y,
             }}
-            transition={{ duration: 5 }}
+            transition={{ duration: display ? 2 : 1 }}
             className="card"
             onAnimationComplete={handleCardAnimation}
             style={{ borderColor }}
             onClick={() => onClick(buttonText)}
             ref={cardRef}
-            // onAnimationStart={() => {
-            // }}
         >
-            <CardImage svgImage={svgImage} />
+            {startBorderAnimation && (
+                <CardImage svgImage={svgImage} color={borderColor} />
+            )}
             <CardButton
                 enableButton={enableButton}
                 buttonText={buttonText}
                 checked={checked}
-                // onClick={() => onClick(buttonText)}
             />
             <motion.div className="card-border" style={{ borderColor }}>
                 <motion.svg
@@ -86,22 +86,22 @@ export default function Card(props) {
                     style={{ position: "absolute", top: 0, left: 0 }}
                 >
                     <motion.path
-                        d="M0,0 H110 V160 H0 Z" // 定義方格的路徑
+                        d="M0,0 H110 V160 H0 Z"
                         fill="none"
-                        stroke={borderColor} // 設置顏色
+                        stroke={borderColor}
                         strokeWidth="3"
-                        strokeDasharray="130" // 路徑的長度 130,580
-                        strokeDashoffset="520" // 初始偏移量，開始時不可見
+                        strokeDasharray="130"
+                        strokeDashoffset="520"
                         animate={
                             startBorderAnimation && {
-                                strokeDashoffset: 0, // 讓線條逐步顯示
+                                strokeDashoffset: 0,
                             }
                         }
                         transition={{
-                            duration: 4, // 動畫持續時間
-                            repeat: Infinity, // 無限循環
+                            duration: 4,
+                            repeat: Infinity,
                             repeatType: "loop",
-                            ease: "linear", // 線性過渡
+                            ease: "linear",
                         }}
                     />
                 </motion.svg>

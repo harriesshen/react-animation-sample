@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import "./index.css";
 export default function StartButton(props) {
-    const { onClick, children } = props;
+    const { onClick, setShow, children } = props;
     const [clicked, setClicked] = useState(false);
-    const duration = 1;
+    const duration = 2;
     const handleClick = () => {
         setClicked(true);
+        setShow(false);
     };
     const handleAnimationComplete = () => {
         onClick();

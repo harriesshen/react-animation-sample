@@ -1,59 +1,57 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { ReactSVG } from "react-svg";
-import demo1 from "../../assets/demo1.svg";
-export default function CardImage(props) {
-    const [pathLengths, setPathLengths] = useState([]);
-    const pathRefs = useRef([]);
+// import demo1Raw from "../../assets/demo1.svg?raw";
 
-    const handleSvgLoad = () => {
-        console.log("svg load");
-        // 這裡的 pathRefs 當前指向已加載的所有 path 元素
-        const paths = pathRefs.current;
-        const lengths = paths.map((path) => path.getTotalLength());
-        setPathLengths(lengths); // 只在 SVG 加載完畢後更新一次
-    };
+export default function CardImage(props) {
+    const { svgImage, color, svgWidth } = props;
+    const [svgInfo, setSvgInfo] = useState({
+        viewBox: "0 0 864 864",
+        paths: [],
+    });
+
     useEffect(() => {
-        console.log("pathLengths", pathLengths);
-    }, [pathLengths]);
+        try {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(svgImage, "image/svg+xml");
+            const svgEl = doc.querySelector("svg");
+            const viewBox = svgEl?.getAttribute("viewBox") || "0 0 864 864";
+            const dList = Array.from(doc.querySelectorAll("path"))
+                .map((p) => p.getAttribute("d"))
+                .filter(Boolean);
+            setSvgInfo({ viewBox, paths: dList });
+        } catch (e) {
+            setSvgInfo((prev) => prev);
+        }
+    }, []);
+    console.log("color", color);
+    const strokeColor = useMemo(() => color || "#FFFFFF", [color]);
+    const strokeWidth = useMemo(() => svgWidth || 6, [svgWidth]);
+
     return (
-        <motion.div
+        <motion.svg
+            viewBox={svgInfo.viewBox}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 2 }}
+            transition={{ duration: 0.5 }}
+            style={{ width: "100%", height: "100%", display: "block" }}
         >
-            <ReactSVG
-                src={demo1} // 你的 SVG 文件路徑
-                beforeInjection={(svg) => {
-                    const paths = svg.querySelectorAll("path");
-                    paths.forEach((path, index) => {
-                        path.style.strokeDasharray = path.getTotalLength();
-                        path.style.strokeDashoffset = path.getTotalLength();
-                    });
-                }}
-                onLoad={handleSvgLoad}
-            >
-                {/* 只在 pathLengths 更新時重新渲染動畫 */}
-                {pathLengths.map((length, index) => (
-                    <motion.path
-                        key={index}
-                        ref={(el) => (pathRefs.current[index] = el)} // 參照每個 path
-                        fill="red"
-                        stroke="red"
-                        strokeWidth="2"
-                        strokeDasharray={length} // 設置 strokeDasharray 為路徑長度
-                        strokeDashoffset={length} // 初始偏移，讓路徑隱藏
-                        animate={{
-                            strokeDashoffset: 0, // 動畫過程中逐漸顯示路徑
-                        }}
-                        transition={{
-                            duration: 3,
-                            delay: index * 0.5, // 每個 path 依次顯示
-                            ease: "easeInOut",
-                        }}
-                    />
-                ))}
-            </ReactSVG>
-        </motion.div>
+            {svgInfo.paths.map((d, index) => (
+                <motion.path
+                    key={index}
+                    d={d}
+                    fill="none"
+                    stroke={strokeColor}
+                    strokeWidth={strokeWidth}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{
+                        duration: 2,
+                        ease: "linear",
+                    }}
+                />
+            ))}
+        </motion.svg>
     );
 }
