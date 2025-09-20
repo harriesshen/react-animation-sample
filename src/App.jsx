@@ -12,28 +12,38 @@ import StartButton from "./components/StartButton";
 import Header from "./components/Header";
 import Title from "./components/Title";
 import Options from "./components/Options";
+import Loading from "./components/Loading";
 
 const App = () => {
     const [step, setStep] = useState(1);
-    const [show, setShow] = useState(true);
+
+    const [showTitle, setShowTitle] = useState(true);
+    const [showHeader, setShowHeader] = useState(true);
     const addStep = () => {
         setStep((prev) => prev + 1);
-        setShow(true);
+        setShowTitle(true);
+        setShowHeader(true);
     };
     return (
         <div className="container">
             {step === 1 && (
                 <>
-                    <Header show={show} />
-                    <div className="content">
-                        <Title show={show}>
+                    <Header show={showHeader} />
+                    <div className="home-page-content">
+                        <Title show={showTitle}>
                             時光總偏心為您獨特滯留
                             <br />
                             為您迷人風采造就出脫穎
                         </Title>
 
                         <div className="home-page-button">
-                            <StartButton onClick={addStep} setShow={setShow}>
+                            <StartButton
+                                onClick={addStep}
+                                setShow={(bool) => {
+                                    setShowTitle(bool);
+                                    setShowHeader(bool);
+                                }}
+                            >
                                 Click Me , Enter The World
                             </StartButton>
                         </div>
@@ -43,9 +53,9 @@ const App = () => {
 
             {step === 2 && (
                 <>
-                    <Header show={show} />
-                    <div className="content">
-                        <Title show={show}>
+                    <Header show={showHeader} />
+                    <div className="card-content">
+                        <Title show={showTitle}>
                             歡迎進駐&nbsp;匠藝幾何世界
                             <br />
                             靜下心，抽取專屬卡牌
@@ -57,7 +67,29 @@ const App = () => {
                 </>
             )}
 
-            {step === 3 && <OptionList />}
+            {step === 3 && (
+                <>
+                    <Header show={showHeader} />
+                    <div className="">
+                        <Title show={showTitle}>
+                            步行在異世界的走廊，
+                            <br />
+                            您想成為的樣貌是？
+                        </Title>
+                        <OptionList
+                            setStep={addStep}
+                            closeTitle={() => {
+                                setShowTitle(false);
+                            }}
+                            closeHeader={() => {
+                                setShowHeader(false);
+                            }}
+                        />
+                    </div>
+                </>
+            )}
+
+            {step === 4 && <Loading />}
         </div>
     );
 };
@@ -67,32 +99,32 @@ export default App;
 const CardContainer = ({ setStep }) => {
     const [cardList, setCardList] = useState([
         {
-            initX: -100,
-            initY: -100,
+            endpointX: 20,
+            endpointY: 5,
             buttonText: "獨角獸",
             checked: false,
             display: true,
             svgImage: Unicorn,
         },
         {
-            initX: 100,
-            initY: -100,
+            endpointX: -20,
+            endpointY: 5,
             buttonText: "雪花",
             checked: false,
             display: true,
             svgImage: Snowflake,
         },
         {
-            initX: -100,
-            initY: 100,
+            endpointX: 20,
+            endpointY: -5,
             buttonText: "禮物",
             checked: false,
             display: true,
             svgImage: Gift,
         },
         {
-            initX: 100,
-            initY: 100,
+            endpointX: -20,
+            endpointY: -5,
             buttonText: "馴鹿",
             checked: false,
             display: true,
@@ -113,15 +145,22 @@ const CardContainer = ({ setStep }) => {
     return (
         <div className="card-container">
             {cardList.map(
-                ({ initX, initY, buttonText, checked, display, svgImage }) => (
+                ({
+                    buttonText,
+                    checked,
+                    display,
+                    svgImage,
+                    endpointX,
+                    endpointY,
+                }) => (
                     <Card
                         key={buttonText}
-                        initX={initX}
-                        initY={initY}
                         buttonText={buttonText}
                         checked={checked}
                         display={display}
                         svgImage={svgImage}
+                        endpointX={endpointX}
+                        endpointY={endpointY}
                         onClick={handleClickCard}
                         setStep={setStep}
                     />
@@ -131,20 +170,16 @@ const CardContainer = ({ setStep }) => {
     );
 };
 
-const OptionList = () => {
+const OptionList = ({ setStep, closeTitle, closeHeader }) => {
     return (
         <div className="option-container">
-            <div className="option-list">
+            <div className="option-content">
                 <div className="option-header">
-                    <div className="option-left-circle">
-                        <div className="circle"></div>
-                        <div className="circle"></div>
-                    </div>
-                    <div className="option-body">{/* <Options /> */}</div>
-                    <div className="option-right-circle">
-                        <div className="circle"></div>
-                        <div className="circle"></div>
-                    </div>
+                    <Options
+                        setStep={setStep}
+                        closeTitle={closeTitle}
+                        closeHeader={closeHeader}
+                    />
                 </div>
             </div>
         </div>

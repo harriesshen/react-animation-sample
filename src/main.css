@@ -130,3 +130,85 @@ table {
     background: black;
     color: white;
 }
+
+@keyframes glowMove {
+    0%,
+    100% {
+        transform: rotate(0deg) scale(1);
+    }
+    33% {
+        transform: rotate(120deg) scale(1.1);
+    }
+    66% {
+        transform: rotate(240deg) scale(0.9);
+    }
+}
+
+/* 漸變動畫 */
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    25% {
+        background-position: 100% 50%;
+    }
+    50% {
+        background-position: 100% 100%;
+    }
+    75% {
+        background-position: 0% 100%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+#root {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* 動態漸變背景 */
+#root::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        #6b46c1 0%,
+        #200a53 25%,
+        #3b82f6 50%,
+        #1d4ed8 75%,
+        #6b46c1 100%
+    );
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease-in-out infinite;
+    z-index: 1;
+}
+
+/* 添加額外的光暈效果 */
+#root::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 300%;
+    height: 300%;
+    background: radial-gradient(
+            circle at 30% 70%,
+            rgba(139, 92, 246, 0.3) 0%,
+            transparent 50%
+        ),
+        radial-gradient(
+            circle at 70% 30%,
+            rgba(59, 130, 246, 0.3) 0%,
+            transparent 50%
+        );
+    animation: glowMove 12s ease-in-out infinite;
+    z-index: 2;
+}

@@ -3,39 +3,56 @@ import { motion } from "framer-motion";
 import "./index.css";
 import CardImage from "../CardImage";
 
+const checkedColor = "#24d8e9";
+
 export default function Card(props) {
     const {
-        initX = 100,
-        initY = 100,
         buttonText,
         checked,
         display,
         onClick,
         svgImage,
         setStep,
+        endpointX,
+        endpointY,
     } = props;
     const [startBorderAnimation, setStartBorderAnimation] = useState(false);
     const [enableButton, setEnableButton] = useState(false);
     const [pickOut, setPickOut] = useState(false);
     const cardRef = useRef(null);
-    const borderColor = checked ? "#1885ebff" : "#FFFFFF";
+    const borderColor = checked ? checkedColor : "#FFFFFF";
     const handleCardAnimation = () => {
         if (!startBorderAnimation) setStartBorderAnimation(true);
         if (cardRef) cardRef.current.style.pointerEvents = "auto";
         if (cardRef && !display) cardRef.current.style.pointerEvents = "none";
-        if (pickOut) setStep();
+        if (pickOut) {
+            setTimeout(() => {
+                setStep();
+            }, 4000);
+        }
     };
 
     const moveToCenter = () => {
-        const rect = cardRef.current.getBoundingClientRect();
-        const cardCenterX = rect.left + rect.width / 2;
-        const cardCenterY = rect.top + rect.height / 2;
+        const cardRect = cardRef.current.getBoundingClientRect();
+        const cardCenterX = cardRect.left + cardRect.width / 2;
+        const cardCenterY = cardRect.top + cardRect.height / 2;
 
-        const screenCenterX = window.innerWidth / 2;
-        const screenCenterY = window.innerHeight / 2;
+        const containerRect = document
+            .querySelector(".card-container")
+            ?.getBoundingClientRect();
 
-        const targetX = screenCenterX - cardCenterX;
-        const targetY = screenCenterY - cardCenterY;
+        if (!containerRect) {
+            console.warn("找不到 .card-container 元素");
+            return { x: 0, y: 0 };
+        }
+
+        // 計算 card-container 的中心點
+        const containerCenterX = containerRect.left + containerRect.width / 2;
+        const containerCenterY = containerRect.top + containerRect.height / 2;
+
+        // 計算需要移動的距離（相對於當前卡片位置）+ 已經移動過的距離(endPoint)
+        const targetX = containerCenterX - cardCenterX + endpointX;
+        const targetY = containerCenterY - cardCenterY + endpointY;
 
         return { x: targetX, y: targetY };
     };
@@ -43,7 +60,7 @@ export default function Card(props) {
     useEffect(() => {
         setTimeout(() => {
             setEnableButton(true);
-        }, 4000);
+        }, 500);
     }, []);
 
     useEffect(() => {
@@ -53,16 +70,17 @@ export default function Card(props) {
             }, 1000);
         }
     }, [display, checked]);
+
     return (
         <motion.div
             // 改變定點位置從InitX,InitY帶值
             initial={{ opacity: 1, x: 0, y: 0 }}
             animate={{
                 opacity: !display ? 0 : 1,
-                x: !pickOut ? initX : moveToCenter().x,
-                y: !pickOut ? initY : moveToCenter().y,
+                x: !pickOut ? endpointX : moveToCenter().x,
+                y: !pickOut ? endpointY : moveToCenter().y,
             }}
-            transition={{ duration: display ? 2 : 1 }}
+            transition={{ duration: display ? 2 : !pickOut ? 1 : 0.5 }}
             className="card"
             onAnimationComplete={handleCardAnimation}
             style={{ borderColor }}
@@ -70,7 +88,11 @@ export default function Card(props) {
             ref={cardRef}
         >
             {startBorderAnimation && (
-                <CardImage svgImage={svgImage} color={borderColor} />
+                <CardImage
+                    svgImage={svgImage}
+                    color={borderColor}
+                    pickOut={pickOut}
+                />
             )}
             <CardButton
                 enableButton={enableButton}
@@ -81,12 +103,12 @@ export default function Card(props) {
                 <motion.svg
                     width="100%"
                     height="100%"
-                    viewBox="0 0 110 160"
+                    viewBox="0 0 120 170"
                     xmlns="http://www.w3.org/2000/svg"
                     style={{ position: "absolute", top: 0, left: 0 }}
                 >
                     <motion.path
-                        d="M0,0 H110 V160 H0 Z"
+                        d="M0,0 H120 V170 H0 Z"
                         fill="none"
                         stroke={borderColor}
                         strokeWidth="3"
@@ -133,9 +155,9 @@ const CardButton = ({ enableButton, buttonText, onClick, checked }) => {
                     duration,
                 }}
                 style={{
-                    backgroundColor: checked ? "#1885ebff" : "transparent",
+                    backgroundColor: checked ? checkedColor : "transparent",
 
-                    borderColor: checked ? "#1885ebff" : "#FFFFFF",
+                    borderColor: checked ? checkedColor : "#FFFFFF",
                 }}
             ></motion.div>
 
@@ -148,7 +170,7 @@ const CardButton = ({ enableButton, buttonText, onClick, checked }) => {
                 transition={{
                     duration,
                 }}
-                style={{ borderColor: checked ? "#1885ebff" : "#FFFFFF" }}
+                style={{ borderColor: checked ? checkedColor : "#FFFFFF" }}
             ></motion.div>
         </motion.button>
     );

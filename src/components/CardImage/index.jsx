@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-// import demo1Raw from "../../assets/demo1.svg?raw";
 
 export default function CardImage(props) {
-    const { svgImage, color, svgWidth } = props;
+    const { svgImage, color, svgWidth, pickOut } = props;
+    const [show, setShow] = useState(true);
     const [svgInfo, setSvgInfo] = useState({
         viewBox: "0 0 864 864",
         paths: [],
@@ -23,7 +23,9 @@ export default function CardImage(props) {
             setSvgInfo((prev) => prev);
         }
     }, []);
-    console.log("color", color);
+    useEffect(() => {
+        if (pickOut) setShow(false);
+    }, [pickOut]);
     const strokeColor = useMemo(() => color || "#FFFFFF", [color]);
     const strokeWidth = useMemo(() => svgWidth || 6, [svgWidth]);
 
@@ -31,8 +33,8 @@ export default function CardImage(props) {
         <motion.svg
             viewBox={svgInfo.viewBox}
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
+            animate={{ opacity: show ? 1 : 0 }}
+            transition={{ duration: 3, delay: !show ? 3 : 0 }}
             style={{ width: "100%", height: "100%", display: "block" }}
         >
             {svgInfo.paths.map((d, index) => (
@@ -45,9 +47,12 @@ export default function CardImage(props) {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
+                    animate={{
+                        pathLength: !pickOut ? 1 : 0,
+                    }}
                     transition={{
-                        duration: 2,
+                        delay: !pickOut ? 0.5 : 0,
+                        duration: !pickOut ? 2 : 5,
                         ease: "linear",
                     }}
                 />
