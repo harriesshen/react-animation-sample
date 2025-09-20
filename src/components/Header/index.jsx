@@ -18,7 +18,7 @@ export default function Header({ show }) {
                 src={Logo}
                 beforeInjection={(svg) => {
                     svg.setAttribute("width", "200px");
-                    svg.setAttribute("height", "40px");
+                    svg.setAttribute("height", "100px");
                 }}
             />
         </motion.div>
